@@ -1,0 +1,280 @@
+<!DOCTYPE html><html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><title>Arena Pintar</title>
+<style>
+:root{--bg:#dfe8ff;--card:#fff;--tx:#14213d;--mu:#5b6785;--ac:#3b6cff;--ln:#d5dcf0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1226;--card:#171f3d;--tx:#eef2ff;--mu:#9aa6cf;--ac:#6d93ff;--ln:#2b3666}}
+:root[data-theme="dark"]{--bg:#0d1226;--card:#171f3d;--tx:#eef2ff;--mu:#9aa6cf;--ac:#6d93ff;--ln:#2b3666}
+html,body{height:100%;margin:0;overflow:hidden;background:var(--bg);color:var(--tx);font:14px system-ui,sans-serif;touch-action:none;user-select:none;-webkit-user-select:none}
+#c{position:fixed;inset:0;width:100%;height:100%}
+#hud{position:fixed;left:0;right:0;top:calc(env(safe-area-inset-top,0px) + 6px);display:none;justify-content:center;gap:6px;pointer-events:none}
+.p{background:#000a;color:#fff;padding:3px 9px;border-radius:12px;font-weight:700;font-size:12px}
+#msg{position:fixed;left:50%;transform:translateX(-50%);top:calc(env(safe-area-inset-top,0px) + 36px);max-width:90%;background:#ffd400;color:#222;font-weight:700;font-size:12px;padding:4px 12px;border-radius:12px;display:none;text-align:center;pointer-events:none}
+#qc{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 6px);width:min(96%,520px);background:var(--card);border:2px solid var(--ac);border-radius:14px;padding:8px 10px;display:none;box-shadow:0 4px 16px #0006}
+#q1{font-weight:700;font-size:15px}#qv svg{display:block;margin:0 auto 4px}#qc.bn{border-color:#ffd400;box-shadow:0 0 18px #ffd400}#q2{font-size:12px;color:var(--mu);margin-top:2px}
+#qa{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:6px}
+button{font:inherit;cursor:pointer}
+#qa button{min-height:44px;border-radius:10px;border:2px solid var(--ln);background:var(--bg);color:var(--tx);font-weight:700;font-size:15px}
+#mu{position:fixed;right:8px;top:calc(env(safe-area-inset-top,0px) + 4px);z-index:5;width:34px;height:34px;border-radius:50%;border:0;background:#000a;font-size:16px;display:none}#js{position:fixed;width:90px;height:90px;border-radius:50%;border:2px solid #fff9;background:#fff3;pointer-events:none;display:none;transform:translate(-50%,-50%)}
+#kn{position:absolute;left:27px;top:27px;width:36px;height:36px;border-radius:50%;background:#fffc}
+.ov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:12px;background:#0007;overflow:auto;box-sizing:border-box}
+.card{background:var(--card);border-radius:16px;padding:14px;width:100%;max-width:420px;max-height:100%;overflow:auto;box-sizing:border-box;touch-action:pan-y}
+h1{margin:0;font-size:22px}.mu{color:var(--mu);font-size:12px;margin:2px 0 6px}
+.lb{font-size:11px;font-weight:700;color:var(--mu);margin:8px 0 4px}
+.row{display:flex;gap:6px;flex-wrap:wrap}
+.ch{flex:1;min-width:70px;padding:7px 4px;border-radius:10px;border:2px solid var(--ln);background:var(--bg);color:var(--tx);font-weight:700;font-size:13px}
+.ch.on{border-color:var(--ac);background:var(--ac);color:#fff}
+.big{width:100%;margin-top:10px;padding:11px;border:0;border-radius:12px;background:#18a957;color:#fff;font-weight:800;font-size:16px}
+.bd{font-size:11px;padding:3px 0;border-bottom:1px solid var(--ln)}
+</style></head><body>
+<canvas id="c"></canvas>
+<div id="hud"><span class="p" id="hl"></span><span class="p" id="hs2"></span><span class="p" id="hq"></span><span class="p" id="ht"></span></div>
+<div id="msg"></div>
+<div id="qc"><div id="qv"></div><div id="q1"></div><div id="q2"></div><div id="qa"></div></div>
+<div id="js"><div id="kn"></div></div><button id="mu" aria-label="Musik">🔊</button>
+<div class="ov" id="home"><div class="card">
+<h1>⚔️ Arena Pintar</h1><p class="mu">Kelas 3 SD · Jawab benar, gerakkan hero, hancurkan turret!</p>
+<div class="lb">Pilih Hero</div><div class="row" id="hh"></div>
+<div class="lb">Mode</div><div class="row" id="mm"></div>
+<div class="lb">Tingkat · 20 soal · 1 nyawa</div><div class="row" id="ll"></div><div class="mu" id="lk"></div>
+<button class="big" id="go">▶ Mulai</button>
+<p class="mu">Geser jari di kiri layar = jalan · geser di kanan = putar kamera · ketuk tanah = hero jalan ke sana · ketuk musuh = pilih target</p>
+<div class="lb">🏆 Papan Skor</div><div id="bd"></div>
+</div></div>
+<div class="ov" id="end" style="display:none"><div class="card" style="text-align:center">
+<h1 id="et"></h1><p id="ex" style="font-size:15px"></p><p class="mu" id="ed"></p>
+<button class="big" id="again">🔁 Main Lagi</button><button class="big" id="back" style="background:var(--ac)">🏠 Beranda</button>
+</div></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const R=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const sh=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const pk=a=>a[R(0,a.length-1)];
+
+/* ===== DATA SOAL + ILUSTRASI ===== */
+const Data=(()=>{
+const mk=(q,ans,ch,v)=>{const c=sh(ch);return{q,c,a:c.indexOf(ans),v}};
+const nums=a=>{const s=[a];let g=0;while(s.length<3&&g++<99){const v=a+(R(0,1)?1:-1)*R(1,10);if(v>=1&&!s.includes(v))s.push(v)}return s};
+const strs=(a,p)=>[a,...sh(p.filter(x=>x!==a)).slice(0,2)];
+const N=(a,b,r,v)=>mk([a,b],r,nums(r),v);
+const W=["one","two","three","four","five","six","seven","eight","nine","ten"];
+const SV=(b,h=80)=>`<svg viewBox="0 0 300 ${h}" style="width:100%;max-height:${h}px" role="img">${b}</svg>`;
+const tx=(t,x,y,s=26,o=1,f='currentColor')=>`<text x="${x}" y="${y}" font-size="${s}" text-anchor="middle" fill="${f}" opacity="${o}">${t}</text>`;
+const em=(e,n,cx,y0=34,per=Math.min(n,6),sz=26,sp=30,dim=0)=>{let s='';for(let i=0;i<n;i++)s+=tx(e,cx+(i%per-(per-1)/2)*sp,y0+(i/per|0)*sp,sz,i>=n-dim?.2:1);return s};
+const ST='fill="#ff9f43" stroke="#333" stroke-width="3"';
+const SH=[["persegi","square",`<rect x="120" y="10" width="60" height="60" ${ST}/>`,4],["persegi panjang","rectangle",`<rect x="95" y="16" width="110" height="48" ${ST}/>`,4],["segitiga","triangle",`<polygon points="150,8 195,70 105,70" ${ST}/>`,3],["lingkaran","circle",`<circle cx="150" cy="40" r="32" ${ST}/>`,0]];
+const CI=[["🍎","apel","apples"],["⭐","bintang","stars"],["🐟","ikan","fish"],["🚗","mobil","cars"],["🎈","balon","balloons"]];
+const shp=()=>{const s=pk(SH);return mk(["Bangun datar apa ini?","What shape is this?"],s[0],strs(s[0],SH.map(x=>x[0])),SV(s[2]))};
+const sides=()=>{const s=pk(SH.slice(0,3));return N("Berapa sisi bangun datar ini?","How many sides does this shape have?",s[3],SV(s[2]))};
+const cnt=lg=>{const[e,i,en]=pk(CI),n=R(3,12),v=SV(em(e,n,150));return lg==='en'?mk([`How many ${en} are in the picture?`],n,nums(n),v):mk([`Ada berapa ${i} pada gambar?`,`How many ${en} are in the picture?`],n,nums(n),v)};
+const arr=(a,b)=>{let d='';for(let i=0;i<a;i++)for(let j=0;j<b;j++)d+=`<circle cx="${150+(j-(b-1)/2)*12}" cy="${(80-a*9)/2+i*9+5}" r="3.5" fill="#f5a623"/>`;return SV(d,82)};
+const RC='stroke="#333" stroke-width="2"';
+const addBar=(a,b)=>{const w=260*a/(a+b);return SV(`<rect x="20" y="30" width="${w}" height="30" fill="#8ecae6" ${RC}/><rect x="${20+w}" y="30" width="${260-w}" height="30" fill="#ffb703" ${RC}/>`+tx(a,20+w/2,51,13)+tx(b,20+w+(260-w)/2,51,13)+tx('?',150,22,20))};
+const subBar=(a,b)=>{const w=260*b/a;return SV(`<rect x="20" y="30" width="260" height="30" fill="#8ecae6" ${RC}/><rect x="${280-w}" y="30" width="${w}" height="30" fill="#ff8fa3" ${RC}/>`+tx(a,150,22,16)+tx('?',20+(260-w)/2,51,18)+tx(b,280-w/2,51,13))};
+const mulBar=(n,m)=>{let d='';for(let i=0;i<n;i++)d+=`<rect x="${20+i*260/n}" y="30" width="${260/n}" height="30" fill="${i%2?'#ffd6a5':'#caffbf'}" ${RC}/>`+tx(m,20+(i+.5)*260/n,51,14);return SV(d+tx('?',150,22,20))};
+const divBar=(t,b)=>{let d='';for(let i=0;i<b;i++)d+=`<rect x="${20+i*260/b}" y="30" width="${260/b}" height="30" fill="${i%2?'#ffd6a5':'#caffbf'}" ${RC}/>`+tx('?',20+(i+.5)*260/b,51,16);return SV(d+tx(t,150,22,16))};
+const ruler=()=>{const n=R(3,12);let d=`<rect x="20" y="42" width="264" height="22" fill="#fff3b0" ${RC}/><rect x="20" y="14" width="${n*22-10}" height="16" fill="#f4c542" ${RC}/><polygon points="${20+n*22-10},14 ${20+n*22},22 ${20+n*22-10},30" fill="#e5989b" ${RC}/>`;for(let i=0;i<=12;i++)d+=`<line x1="${20+i*22}" y1="42" x2="${20+i*22}" y2="52" ${RC}/>`+tx(i,20+i*22,76,10);return N('Berapa panjang pensil pada gambar (cm)?','How long is the pencil in the picture (cm)?',n,SV(d))};
+const clockQ=()=>{const h=R(1,12),m=pk([0,30]),f=(x,y)=>`${x}.${y?'30':'00'}`,L=f(h,m);return mk(['Jam berapa yang ditunjukkan gambar?','What time does the clock show?'],L,strs(L,[f(h,!m),f(h%12+1,m),f((h+10)%12+1,m)]),clock(h,m))};
+const MT=[[
+()=>{const a=R(10,60),b=R(10,39);return N(`Berapa ${a} + ${b}?`,`What is ${a} + ${b}?`,a+b,addBar(a,b))},
+()=>cnt(),
+()=>{const a=R(40,99),b=R(10,39);return N(`Berapa ${a} − ${b}?`,`What is ${a} − ${b}?`,a-b,subBar(a,b))},
+shp,
+()=>{const a=R(3,8),b=R(2,6);return N(`Ibu membawa ${a} apel, lalu membeli ${b} apel lagi. Berapa apel Ibu sekarang?`,`Mom has ${a} apples and buys ${b} more. How many apples now?`,a+b,SV(tx('👩',22,52,32)+em('🍎',a,98,34,Math.min(a,4),24,26)+tx('+',170,48,30)+em('🍎',b,235,34,Math.min(b,3),24,26)))},
+()=>{const a=R(2,5),b=R(2,5);return N(`Berapa ${a} × ${b}?`,`What is ${a} × ${b}?`,a*b,arr(a,b))}
+],[
+()=>{const n=R(2,5),m=R(2,6);let d='';for(let i=0;i<n;i++){const c=150+(i-(n-1)/2)*58;d+=`<rect x="${c-27}" y="6" width="54" height="68" rx="8" fill="none" stroke="#888" stroke-width="2"/>`+em('🍎',m,c,30,3,17,16)}return N(`Ada ${n} keranjang, tiap keranjang berisi ${m} apel. Berapa apel semuanya?`,`There are ${n} baskets with ${m} apples each. How many apples in all?`,n*m,SV(d))},
+()=>{const a=R(3,9),b=R(3,9);return N(`Berapa ${a} × ${b}?`,`What is ${a} × ${b}?`,a*b,arr(a,b))},
+sides,
+()=>{const b=R(2,9),q=R(2,9);return N(`Berapa ${b*q} ÷ ${b}?`,`What is ${b*q} ÷ ${b}?`,q,divBar(b*q,b))},
+()=>{const a=R(100,499),b=R(100,399);return N(`Berapa ${a} + ${b}?`,`What is ${a} + ${b}?`,a+b,addBar(a,b))},
+ruler,
+()=>{const a=R(300,900),b=R(100,299);return N(`Berapa ${a} − ${b}?`,`What is ${a} − ${b}?`,a-b,subBar(a,b))}
+],[
+()=>{const p=R(6,15),l=R(3,p-1);return N(`Persegi panjang berukuran ${p} cm × ${l} cm. Berapa kelilingnya (cm)?`,`A rectangle is ${p} cm by ${l} cm. What is its perimeter (cm)?`,2*(p+l),SV(`<rect x="100" y="22" width="100" height="40" fill="#8ecae6" stroke="#333" stroke-width="3"/>`+tx(p+' cm',150,16,14)+tx(l+' cm',236,47,14)))},
+()=>{const a=R(20,50),b=R(10,30),c=R(5,25);return N(`Ani punya ${a} kelereng, membeli ${b} lagi, lalu memberi ${c} ke adiknya. Berapa kelereng Ani sekarang?`,`Ani has ${a} marbles, buys ${b} more, then gives ${c} to her brother. How many marbles now?`,a+b-c,SV(tx('👧',34,56,38)+tx(`${a} 🔵 + ${b} 🔵 − ${c} 🔵`,176,50,20)))},
+clockQ,
+()=>{const n=R(3,7),m=R(5,9),k=R(2,9);return N(`${n} kantong berisi ${m} permen, ditambah ${k} permen lepas. Berapa permen semuanya?`,`${n} bags have ${m} candies each, plus ${k} loose candies. How many candies in all?`,n*m+k,SV(em('🛍️',n,150,30,n,26,34)+tx(`🛍️ = ${m} 🍬     + ${k} 🍬`,150,70,16)))},
+()=>{const b=R(3,6),q=R(2,5),r=R(1,b-1),t=b*q+r;let d='';for(let i=0;i<t;i++)d+=tx(i<b*q?'⭐':'🔸',150+(i%12-5.5)*17,22+(i/12|0)*20,15);return N(`${t} bintang dibagi rata ke ${b} anak. Berapa bintang yang tersisa (bintang 🔸)?`,`${t} stars are shared equally among ${b} children. How many stars are left over (the 🔸 stars)?`,r,SV(d))},
+()=>{const a=R(2,9),b=R(2,9);return N(`What is ${W[a-1]} times ${W[b-1]}?`,`(Berapa ${a} × ${b}?)`,a*b,arr(a,b))},
+()=>{const p=R(4,12),l=R(2,p-1);return N(`Persegi panjang berukuran ${p} cm × ${l} cm. Berapa luasnya (cm²)?`,`A rectangle is ${p} cm by ${l} cm. What is its area (cm²)?`,p*l,SV(`<rect x="100" y="22" width="100" height="40" fill="#b7e4c7" stroke="#333" stroke-width="3"/>`+tx(p+' cm',150,16,14)+tx(l+' cm',236,47,14)))}
+]];
+const VE=[["kucing","cat","🐱"],["anjing","dog","🐶"],["buku","book","📖"],["jeruk","orange","🍊"],["kursi","chair","🪑"],["apel","apple","🍎"],["air","water","💧"],["rumah","house","🏠"],["sekolah","school","🏫"],["ikan","fish","🐟"],["burung","bird","🐦"],["merah","red","🔴"],["biru","blue","🔵"],["hijau","green","🟢"],["satu","one","1️⃣"],["tiga","three","3️⃣"],["lima","five","5️⃣"],["sepuluh","ten","🔟"],["topi","hat","🎩"],["bola","ball","⚽"]];
+const VS=[["teacher","guru","👩‍🏫"],["pencil","pensil","✏️"],["bag","tas","🎒"],["milk","susu","🥛"],["rice","nasi","🍚"],["bread","roti","🍞"],["banana","pisang","🍌"],["window","jendela","🪟"],["door","pintu","🚪"],["car","mobil","🚗"],["tree","pohon","🌳"],["flower","bunga","🌸"],["sun","matahari","☀️"],["moon","bulan","🌙"],["rain","hujan","🌧️"],["hand","tangan","✋"],["eye","mata","👁️"],["big","besar","🐘"],["small","kecil","🐜"],["happy","senang","😊"]];
+const NM=["Ani","Budi","Sam","Rina","Tom","Dina"],DY=["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"];
+const CH={blue:'#3b82f6',green:'#22c55e',yellow:'#facc15',red:'#ef4444',white:'#ffffff',black:'#111111'};
+const CO=[["sky","blue"],["grass","green"],["banana","yellow"],["apple","red"],["snow","white"],["coal","black"]],CC=Object.keys(CH);
+const clock=(h,m=0)=>{const a=(h%12+m/60)*Math.PI/6,c=m*Math.PI/30;return SV(`<circle cx="150" cy="40" r="36" fill="none" stroke="currentColor" stroke-width="3"/>`+tx('12',150,18,11)+tx('3',181,44,11)+tx('6',150,73,11)+tx('9',119,44,11)+`<line x1="150" y1="40" x2="${150+Math.sin(c)*26}" y2="${40-Math.cos(c)*26}" stroke="#e5484d" stroke-width="3"/><line x1="150" y1="40" x2="${150+Math.sin(a)*18}" y2="${40-Math.cos(a)*18}" stroke="currentColor" stroke-width="4"/>`)};
+const WE=[['☀️','sunny'],['🌧️','rainy'],['☁️','cloudy'],['❄️','snowy'],['💨','windy']];
+const STO=[["Budi has a red kite. He flies it in the field.","What does Budi fly?","a kite",["a ball","a bird"],"🪁"],["Rina has a white cat. The cat likes to drink milk.","What does the cat drink?","milk",["water","juice"],"🐱🥛"],["Tom goes to school by bus. The bus is yellow.","How does Tom go to school?","by bus",["by car","by bike"],"🚌"],["Dina is in the garden. She sees a pretty flower.","Where is Dina?","in the garden",["in the kitchen","at school"],"🌸"],["It is raining today. Ani takes an umbrella.","What does Ani take?","an umbrella",["a hat","a bag"],"☔"],["Sam is hungry. He eats a big apple.","What does Sam eat?","an apple",["a book","a ball"],"🍎"],["Mom cooks rice in the kitchen.","Where does Mom cook?","in the kitchen",["in the garden","at school"],"🍚"],["Lina has two pencils and one book in her bag.","What is in Lina’s bag?","two pencils and one book",["two books and one pencil","one pencil only"],"✏️✏️📖"]];
+const EN3=[
+()=>{const n=pk(NM),a=R(2,6),b=R(2,5);return mk([`${n} has ${a} cats and ${b} dogs. How many pets does ${n} have?`],a+b,nums(a+b),SV(em('🐱',a,80,34,Math.min(a,3),26,32)+em('🐶',b,220,34,Math.min(b,3),26,32)))},
+()=>{const n=pk(NM),a=R(6,12),b=R(2,5);return mk([`${n} has ${a} apples and gives ${b} apples to a friend (the faded ones). How many apples are left?`],a-b,nums(a-b),SV(em('🍎',a,150,34,6,26,32,b)))},
+()=>{const i=R(0,6);return mk([`Look at the calendar. What day is tomorrow?`],DY[(i+1)%7],strs(DY[(i+1)%7],DY),SV(DY.map((d,j)=>`<rect x="${4+j*42}" y="24" width="38" height="36" rx="6" fill="${j===i?'#ffd400':'none'}" stroke="#888" stroke-width="2"/>`+tx(d.slice(0,3),23+j*42,47,13,1,j===i?'#222':'currentColor')).join('')+tx('Today',23+i*42,17,11)))},
+()=>{const x=pk(CO),y=pk(CO.filter(z=>z!==x)),c=(o,cx)=>`<circle cx="${cx}" cy="34" r="22" fill="${CH[o[1]]}" stroke="#555" stroke-width="2"/>`+tx(o[0],cx,74,13);return mk([`Look at the picture. What colour is the ${y[0]}?`],y[1],strs(y[1],CC),SV(c(x,95)+c(y,205)))},
+()=>{const w=pk(WE);return mk(['Look at the picture. What is the weather?'],w[1],strs(w[1],WE.map(x=>x[1])),SV(tx(w[0],150,62,54)))},
+()=>{const t=pk(STO);return mk([t[0]+' '+t[1]],t[2],[t[2],...t[3]],SV(tx(t[4],150,60,46)))},
+()=>{const h=R(1,12),o=x=>`${x} o’clock`;return mk(['Look at the clock. What time is it?'],o(h),strs(o(h),[1,2,3,4,5,6,7,8,9,10,11,12].map(o)),clock(h))}
+];
+const bonus=()=>{const a=R(2,9),b=R(2,9);return mk([`What is ${W[a-1]} times ${W[b-1]}?`,'⭐ SOAL BONUS · benar = +1 nyawa'],a*b,nums(a*b),arr(a,b))};
+function gen(mode,l){const seen=new Set(),out=[];
+ if(mode==='en'&&l===0)return sh(VE).map(([a,b,e])=>mk([`What is “${a}” in English?`],b,strs(b,VE.map(x=>x[1])),SV(tx(e,150,62,54))));
+ if(mode==='en'&&l===1)return sh([...sh(VS).slice(0,12).map(([a,b,e])=>mk([`What does “${a}” mean?`],b,strs(b,VS.map(x=>x[1])),SV(tx(e,150,62,54)))),...(()=>{const o=[],k=new Set();while(o.length<4){const q=cnt('en');if(!k.has(q.q[0]+q.v)){k.add(q.q[0]+q.v);o.push(q)}}return o})(),...SH.map(s=>mk(['What shape is this?'],s[1],strs(s[1],SH.map(x=>x[1])),SV(s[2])))]);
+ const G=mode==='en'?EN3:MT[l];let i=0,g=0;
+ while(out.length<20&&g++<800){const q=G[i++%G.length]();const k=q.q[0]+(q.v||'');if(!seen.has(k)){seen.add(k);out.push(q)}}
+ return sh(out)}
+return{gen,bonus,one:(m,l)=>gen(m,l)[0],heroes:[{n:"Ksatria",c:0xe5484d},{n:"Penyihir",c:0x3b6cff},{n:"Pemanah",c:0x18a957},{n:"Ninja",c:0x8e4ec6}],
+ lv:[{n:"Mudah",e:14,t:6},{n:"Sedang",e:12,t:8},{n:"Sulit",e:10,t:10}],md:{mtk:"MTK",en:"Inggris"}}})();
+
+/* ===== STATE & PAPAN SKOR ===== */
+const S={th:0,lives:1,bz:-1,bon:false,cur:null,hero:0,mode:'mtk',lv:0,qs:[],qi:0,score:0,ph:'home',tq:60,jt:10,t:null,yaw:0,nx:0,pr:null,won:false};
+const Store={get(){try{return JSON.parse(localStorage.getItem('ap_board'))||[]}catch(e){return[]}},
+ add(r){try{const b=this.get();b.push(r);b.sort((x,y)=>y.s-x.s);localStorage.setItem('ap_board',JSON.stringify(b.slice(0,20)))}catch(e){}}};
+
+const Prog={get(){try{return JSON.parse(localStorage.getItem('ap_prog'))||{}}catch(e){return{}}},done(m,l){try{const p=this.get();p[m]=Math.max(p[m]||0,l+1);localStorage.setItem('ap_prog',JSON.stringify(p))}catch(e){}},open(m){return this.get()[m]||0}};
+/* ===== AUDIO ===== */
+let ac;const beep=(f,d=.12,t='sine')=>{try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();const o=ac.createOscillator(),g=ac.createGain();o.type=t;o.frequency.value=f;g.gain.value=.07;o.connect(g);g.connect(ac.destination);o.start();o.stop(ac.currentTime+d)}catch(e){}};
+
+const Mus={on:true,run:false,t:0,k:0,id:0,
+ start(){if(this.run||!this.on)return;try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();ac.resume()}catch(e){return}this.run=true;this.t=ac.currentTime+.1;this.id=setInterval(()=>this.tick(),150)},
+ stop(){this.run=false;clearInterval(this.id)},
+ note(f,t,d,ty,v){const o=ac.createOscillator(),g=ac.createGain();o.type=ty;o.frequency.value=f;g.gain.setValueAtTime(v,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+d)},
+ tick(){if(!ac||!this.run)return;const root=[262,294,220,247,330][S.th],dur=[.28,.32,.4,.38,.3][S.th],sc5=[1,9/8,5/4,3/2,5/3,2],M=[0,2,4,2,5,4,2,0,1,3,4,3,5,3,2,1];
+  while(this.t<ac.currentTime+.5){const k=this.k++;this.note(root*sc5[M[k%16]],this.t,dur*.9,'triangle',.05);if(k%4===0)this.note(root/2*sc5[[0,3,4,3][(k/4|0)%4]],this.t,dur*3.5,'sine',.06);this.t+=dur}}};
+/* ===== SCENE 3D ===== */
+const T=THREE,cv=$('c');
+const ren=new T.WebGLRenderer({canvas:cv,antialias:false});ren.setPixelRatio(Math.min(devicePixelRatio||1,1.5));
+const sc=new T.Scene();sc.background=new T.Color(0x9ad4ff);sc.fog=new T.Fog(0x9ad4ff,45,130);
+const cam=new T.PerspectiveCamera(60,1,.1,200);
+const hl=new T.HemisphereLight(0xffffff,0x557755,.95);sc.add(hl);const dl=new T.DirectionalLight(0xffffff,.55);dl.position.set(20,40,10);sc.add(dl);
+const mesh=(g,c,x=0,y=0,z=0)=>{const m=new T.Mesh(g,new T.MeshLambertMaterial({color:c}));m.position.set(x,y,z);return m};
+const flat=(w,d,c,x,z,y=.01)=>{const m=mesh(new T.PlaneGeometry(w,d),c,x,y,z);m.rotation.x=-Math.PI/2;sc.add(m);return m};
+const cols=[];
+const gnd=flat(130,130,0x6cc28a,0,0,0),TT=[];
+const hub=new T.Mesh(new T.CircleGeometry(16,32),new T.MeshLambertMaterial({color:0xe8d9a8}));hub.rotation.x=-Math.PI/2;hub.position.y=.02;sc.add(hub);
+const crys=mesh(new T.OctahedronGeometry(1.4),0x66e0ff,0,2.2,0);sc.add(crys);cols.push({x:0,z:0,r:1.4});
+const DIR=[[0,-1],[1,0],[0,1],[-1,0]],RC=[0x9fb4d9,0xd9b49f,0xb4d99f,0xd99fc9],RW=[0x5b6f99,0x99705b,0x6f995b,0x995b89];
+function wall(f,r,u0,u1,v0,v1,col){const a=[f[0]*v0+r[0]*u0,f[1]*v0+r[1]*u0],b=[f[0]*v1+r[0]*u1,f[1]*v1+r[1]*u1];
+ const x0=Math.min(a[0],b[0]),x1=Math.max(a[0],b[0]),z0=Math.min(a[1],b[1]),z1=Math.max(a[1],b[1]);
+ sc.add(mesh(new T.BoxGeometry(x1-x0,4,z1-z0),col,(x0+x1)/2,2,(z0+z1)/2));cols.push({x0,x1,z0,z1})}
+const rw=(i,u,v)=>{const f=DIR[i],r=[-f[1],f[0]];return[f[0]*v+r[0]*u,f[1]*v+r[1]*u]};
+DIR.forEach((f,i)=>{const r=[-f[1],f[0]];flat(24,24,RC[i],f[0]*40,f[1]*40,.02);flat(f[0]?12:8,f[0]?8:12,0xe8d9a8,f[0]*22,f[1]*22,.03);
+ wall(f,r,-12.5,-4,27.5,28.5,RW[i]);wall(f,r,4,12.5,27.5,28.5,RW[i]);wall(f,r,-12.5,12.5,51.5,52.5,RW[i]);wall(f,r,-12.5,-11.5,28,52,RW[i]);wall(f,r,11.5,12.5,28,52,RW[i])});
+const tg1=new T.CylinderGeometry(.3,.4,1.6,6),tg2=new T.ConeGeometry(1.4,3.5,7);
+for(let i=0;i<26;i++){const x=pk([-1,1])*R(18,56),z=pk([-1,1])*R(18,56);sc.add(mesh(tg1,0x8d5524,x,.8,z));const tp=mesh(tg2,0x2e8b57,x,3.2,z);TT.push(tp);sc.add(tp);cols.push({x,z,r:1.2})}
+function collide(p){p.x=Math.max(-58,Math.min(58,p.x));p.z=Math.max(-58,Math.min(58,p.z));
+ for(const c of cols){if(c.r){const dx=p.x-c.x,dz=p.z-c.z,d=Math.hypot(dx,dz),m=c.r+.6;if(d<m&&d>0){p.x=c.x+dx/d*m;p.z=c.z+dz/d*m}}
+ else{const qx=Math.max(c.x0,Math.min(p.x,c.x1)),qz=Math.max(c.z0,Math.min(p.z,c.z1)),dx=p.x-qx,dz=p.z-qz,d=Math.hypot(dx,dz);if(d<.6&&d>0){p.x=qx+dx/d*.6;p.z=qz+dz/d*.6}}}}
+const TH=[{n:'Siang Cerah',e:'☀️',sky:0x9ad4ff,hs:0xffffff,hg:0x557755,hi:.95,di:.55,dc:0xffffff,g:0x6cc28a,hub:0xe8d9a8,tr:0x2e8b57,d:'cloud'},
+{n:'Senja',e:'🌅',sky:0xff9a6c,hs:0xffd0a0,hg:0x7a5560,hi:.8,di:.5,dc:0xffb070,g:0x9bb866,hub:0xe0b890,tr:0x7a8f3a,d:'cloud'},
+{n:'Malam Berbulan',e:'🌙',sky:0x0c1433,hs:0x8aa0ff,hg:0x223344,hi:.75,di:.35,dc:0x9fb4ff,g:0x2f5d4a,hub:0x8d93a8,tr:0x1d4d3a,d:'star'},
+{n:'Pagi Berkabut',e:'🌫️',sky:0xcfd8dc,hs:0xffffff,hg:0x778877,hi:1,di:.35,dc:0xffffff,g:0x7fae8a,hub:0xd8d2c0,tr:0x4f8a6a,d:'mist',fn:15,ff:75},
+{n:'Salju',e:'❄️',sky:0xcfe9ff,hs:0xffffff,hg:0xaabbd0,hi:1,di:.5,dc:0xffffff,g:0xf2f7ff,hub:0xdce8f5,tr:0xcfe3dc,d:'snow'}];
+let dec;const cloudG=new T.SphereGeometry(4,8,6);
+function applyTheme(i){const t=TH[i];S.th=i;sc.background.setHex(t.sky);sc.fog.color.setHex(t.sky);sc.fog.near=t.fn||45;sc.fog.far=t.ff||130;
+ hl.color.setHex(t.hs);hl.groundColor.setHex(t.hg);hl.intensity=t.hi;dl.color.setHex(t.dc);dl.intensity=t.di;gnd.material.color.setHex(t.g);hub.material.color.setHex(t.hub);TT.forEach(m=>m.material.color.setHex(t.tr));
+ if(dec)sc.remove(dec);dec=new T.Group();
+ if(t.d==='star'||t.d==='snow'){const st=t.d==='star',p=[];for(let k=0;k<(st?220:140);k++){if(st){const a=Math.random()*6.283,b=Math.random()*1.3+.15;p.push(Math.cos(a)*Math.sin(b)*100,Math.cos(b)*100,Math.sin(a)*Math.sin(b)*100)}else p.push(R(-50,50),Math.random()*18+1,R(-50,50))}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(p,3));dec.add(new T.Points(g,new T.PointsMaterial({color:0xffffff,size:st?2:.7,fog:!st})));
+  if(st){const m=new T.Mesh(new T.SphereGeometry(5,12,8),new T.MeshBasicMaterial({color:0xfff6c0,fog:false}));m.position.set(-40,50,-60);dec.add(m)}}
+ else for(let k=0;k<9;k++){const c=new T.Group(),mist=t.d==='mist';for(let j=0;j<3;j++){const m=new T.Mesh(cloudG,new T.MeshBasicMaterial({color:t.d==='cloud'&&i===1?0xffd9c0:0xffffff,transparent:true,opacity:mist?.3:.9}));m.position.set(j*4-4,Math.random()*2,Math.random()*2);m.scale.set(1.6,.7,1);c.add(m)}c.position.set(R(-70,70),mist?3:R(24,32),R(-70,70));dec.add(c)}
+ sc.add(dec)}
+applyTheme(0);
+/* hero */
+const H={x:0,z:8,y:0,vy:0};let hg,crown;
+function buildHero(){if(hg)sc.remove(hg);const i=S.hero,c=Data.heroes[i].c;hg=new T.Group();
+ hg.add(mesh(new T.CylinderGeometry(.5,.6,1.2,10),c,0,.9,0));hg.add(mesh(new T.SphereGeometry(.4,10,8),0xffd2a8,0,1.8,0));
+ hg.add([()=>mesh(new T.BoxGeometry(.9,.3,.9),0xcccccc,0,2.15,0),()=>mesh(new T.ConeGeometry(.5,.9,8),c,0,2.4,0),()=>mesh(new T.SphereGeometry(.45,8,6,0,6.3,0,1.6),0x2e7d32,0,1.9,0),()=>mesh(new T.BoxGeometry(.85,.15,.85),0x222222,0,1.95,0)][i]());
+ const s=mesh(new T.CylinderGeometry(.06,.06,1.8,6),0x8d5524,.75,1,0);s.rotation.z=.2;hg.add(s);
+ crown=mesh(new T.TorusGeometry(.35,.1,6,12),0xffd400,0,2.9,0);crown.rotation.x=Math.PI/2;crown.visible=false;hg.add(crown);sc.add(hg)}
+/* targets */
+let tg=[];
+function mkT(x,z,turret){const g=new T.Group(),t={g,turret,alive:true,hp:0,max:0,ring:null};g.position.set(x,0,z);
+ if(turret){g.add(mesh(new T.CylinderGeometry(1.4,1.8,2,10),0x555e70,0,1,0),mesh(new T.CylinderGeometry(.8,.8,1.5,10),0x6b7488,0,2.7,0),mesh(new T.SphereGeometry(1.1,10,8),0xff5252,0,4,0),mesh(new T.BoxGeometry(.5,.5,2),0x333333,0,4,1.3));
+  const bar=new T.Group();bar.position.y=6;bar.add(mesh(new T.PlaneGeometry(3,.35),0x222222,0,0,0));const f=mesh(new T.PlaneGeometry(3,.28),0x44e06a,0,0,.02);f.geometry.translate(1.5,0,0);f.position.x=-1.5;bar.add(f);g.add(bar);t.bar=bar;t.fill=f;cols.push(t.col={x,z,r:2})}
+ else{g.add(mesh(new T.SphereGeometry(.9,10,8),0x7b2d8e,0,1,0));[-.3,.3].forEach(e=>g.add(mesh(new T.SphereGeometry(.18,6,6),0xffffff,e,1.25,.78)))}
+ const hit=new T.Mesh(new T.SphereGeometry(turret?3:2.2,8,6),new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false}));hit.position.y=1.5;g.add(hit);
+ t.ring=new T.Mesh(new T.RingGeometry(turret?2.3:1.4,turret?2.8:1.8,24),new T.MeshBasicMaterial({color:0x44ff88}));t.ring.rotation.x=-Math.PI/2;t.ring.position.y=.08;t.ring.visible=false;g.add(t.ring);
+ g.traverse(o=>o.userData.t=t);sc.add(g);tg.push(t);return t}
+function buildTargets(){tg.forEach(t=>{sc.remove(t.g);if(t.col){const i=cols.indexOf(t.col);if(i>=0)cols.splice(i,1)}});tg=[];
+ const L=Data.lv[S.lv],tr=R(0,3),P=[];for(let k=0;k<5;k++){const a=k/5*6.283;P.push([Math.sin(a)*9,Math.cos(a)*9])}
+ for(let i=0;i<4;i++)(i===tr?[[-6,33],[6,36]]:[[-6,33],[6,36],[-5,43]]).forEach(([u,v])=>P.push(rw(i,u,v)));
+ sh(P).slice(0,L.e).forEach(p=>mkT(p[0],p[1],false));const p=rw(tr,0,47),t=mkT(p[0],p[1],true);t.hp=t.max=L.t}
+const enemiesLeft=()=>tg.some(t=>!t.turret&&t.alive);
+const ok=t=>t.alive&&(!t.turret||!enemiesLeft());
+function rings(){tg.forEach(t=>{t.ring.visible=(S.ph==='pick'||S.ph==='go')&&ok(t);t.ring.material.color.setHex(t===S.t?0xffd400:0x44ff88)})}
+
+/* ===== INPUT (sentuh/mouse/keyboard, tanpa tombol panah) ===== */
+const P={},J={x:0,y:0},K={};const GO=['ask','pick','go','hit'];
+cv.addEventListener('pointerdown',e=>{if(!GO.includes(S.ph))return;try{cv.setPointerCapture(e.pointerId)}catch(_){}
+ const j=e.clientX<innerWidth/2&&!Object.values(P).some(p=>p.j);P[e.pointerId]={x0:e.clientX,y0:e.clientY,px:e.clientX,t:performance.now(),mv:false,j};
+ if(j){const s=$('js').style;s.display='block';s.left=e.clientX+'px';s.top=e.clientY+'px'}});
+cv.addEventListener('pointermove',e=>{const p=P[e.pointerId];if(!p)return;const dx=e.clientX-p.x0,dy=e.clientY-p.y0,l=Math.hypot(dx,dy);if(l>8)p.mv=true;
+ if(p.j){const k=Math.min(1,l/45);J.x=l?dx/l*k:0;J.y=l?dy/l*k:0;$('kn').style.transform=`translate(${J.x*30}px,${J.y*30}px)`}else{S.yaw-=(e.clientX-p.px)*.008;p.px=e.clientX}});
+const up=e=>{const p=P[e.pointerId];if(!p)return;if(p.j){J.x=J.y=0;$('js').style.display='none';$('kn').style.transform=''}
+ if(!p.mv&&performance.now()-p.t<350)tap(e.clientX,e.clientY);delete P[e.pointerId]};
+cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+addEventListener('keydown',e=>{K[e.code]=1});addEventListener('keyup',e=>{K[e.code]=0});
+let D0=null;const PL=new T.Plane(new T.Vector3(0,1,0),0);
+const rc=new T.Raycaster();
+function tap(x,y){rc.setFromCamera({x:x/innerWidth*2-1,y:-(y/innerHeight)*2+1},cam);if(S.ph==='pick'||S.ph==='go'){
+ const h=rc.intersectObjects(tg.filter(ok).map(t=>t.g),true)[0];if(h){sel(h.object.userData.t);return}}const p=new T.Vector3();if(rc.ray.intersectPlane(PL,p))D0={x:p.x,z:p.z}}
+
+/* ===== ALUR GAME ===== */
+const msgEl=$('msg');let lastMsg='';
+function msg(t){if(t===lastMsg)return;lastMsg=t;msgEl.textContent=t;msgEl.style.display=t?'block':'none'}
+function sel(t){if(!ok(t))return;S.t=t;S.ph='go';beep(520,.08);rings()}
+function nextQ(){if(S.qi>=20)return fin(true);S.bon=S.qi>0&&S.qi%5===0&&S.bz!==S.qi;if(S.bon){S.bz=S.qi;S.cur=Data.bonus()}else S.cur=S.qs[S.qi];S.ph='ask';S.tq=60;S.t=null;const q=S.cur;$('qc').className=S.bon?'bn':'';$('qv').innerHTML=q.v||'';
+ $('q1').textContent=q.q[0];$('q2').textContent=q.q[1]||'';$('qa').innerHTML='';
+ q.c.forEach((c,i)=>{const b=document.createElement('button');b.textContent=c;b.dataset.i=i;$('qa').appendChild(b)});$('qc').style.display='block';rings()}
+$('qa').onclick=e=>{const b=e.target.closest('button');if(!b||S.ph!=='ask')return;const q=S.cur,ks=[...$('qa').children];ks[q.a].style.background='#18a957';ks[q.a].style.color='#fff';
+ if(S.bon){S.ph='fb';if(+b.dataset.i===q.a){S.lives=Math.min(3,S.lives+1);beep(880,.3);msg('❤️ +1 nyawa!')}else{b.style.background='#e5484d';b.style.color='#fff';msg('Belum tepat, tidak apa-apa!')}return setTimeout(nextQ,1200)}
+ if(+b.dataset.i===q.a){beep(660);setTimeout(()=>beep(880),90);S.score+=10+Math.ceil(S.tq/6);$('qc').style.display='none';S.ph='pick';S.jt=10;rings();
+  if(!enemiesLeft())sel(tg.find(t=>t.turret&&t.alive))}
+ else{b.style.background='#e5484d';b.style.color='#fff';wrongT()}};
+function wrongT(){beep(180,.4,'sawtooth');S.lives--;if(S.lives<=0)return fin(false);S.ph='fb';msg('💥 Nyawa tinggal '+S.lives+'! Soal diganti baru');setTimeout(()=>{S.qs[S.qi]=Data.one(S.mode,S.lv);nextQ()},1300)}
+function fin(w){S.ph=w?'end':'lose';S.won=w;Mus.stop();setTimeout(()=>{$('qc').style.display='none';msg('');
+ const L=Data.lv[S.lv],H0=Data.heroes[S.hero],d=new Date().toLocaleDateString('id-ID',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+ if(w){Prog.done(S.mode,S.lv);crown.visible=true;[523,659,784,1047].forEach((f,i)=>setTimeout(()=>beep(f,.2),i*140));Store.add({h:H0.n,m:Data.md[S.mode],l:L.n,s:S.score,d});
+  $('et').textContent='🏆 Hero Terbaik!';$('ex').textContent=`${H0.n} menamatkan ${Data.md[S.mode]} ${L.n} · Skor ${S.score}`;$('ed').textContent='Finish: '+d+(S.lv<2?' · 🔓 Tingkat berikutnya terbuka!':' · 🎉 Semua tingkat tamat!')}
+ else{$('et').textContent='💥 Musuh menyerang balik!';$('ex').textContent=`Nyawa habis di soal ${S.qi+1}. Skor ${S.score}`;$('ed').textContent='Tenang, coba lagi ya!'}
+ $('end').style.display='flex'},w?500:1000)}
+function atk(){S.ph='hit';S.pr={m:mesh(new T.SphereGeometry(.35,8,6),0xffd400),a:0,fx:H.x,fz:H.z};sc.add(S.pr.m)}
+function hit(){const t=S.t;if(t.turret){t.hp--;t.fill.scale.x=Math.max(.001,t.hp/t.max);beep(300,.2,'square');if(t.hp<=0){t.alive=false;t.dy=1;const i=cols.indexOf(t.col);if(i>=0)cols.splice(i,1);beep(110,.6,'sawtooth')}}
+ else{t.alive=false;t.dy=1;beep(440,.15,'square')}rings()}
+function startGame(){if(S.lv>Prog.open(S.mode))S.lv=Prog.open(S.mode);let k=0;do{S.qs=Data.gen(S.mode,S.lv)}while(S.last&&k++<30&&(S.qs[0].q[0]+S.qs[0].v===S.last||S.qs.slice(0,5).map(x=>x.q[0]+x.v).join()===S.l5));S.last=S.qs[0].q[0]+S.qs[0].v;S.l5=S.qs.slice(0,5).map(x=>x.q[0]+x.v).join();applyTheme(pk([0,1,2,3,4].filter(x=>x!==S.th)));S.qi=0;S.score=0;S.lives=1;S.bz=-1;S.t=null;S.pr=null;H.x=0;H.z=8;H.y=0;S.yaw=0;buildHero();buildTargets();
+ $('home').style.display=$('end').style.display='none';$('hud').style.display='flex';$('mu').style.display='block';Mus.start();nextQ()}
+function toHome(){S.ph='home';Mus.stop();$('mu').style.display='none';$('end').style.display='none';$('hud').style.display='none';$('qc').style.display='none';msg('');H.x=0;H.z=8;buildHero();buildTargets();tg.forEach(t=>t.ring.visible=false);board();drawChips();$('home').style.display='flex'}
+
+/* ===== LOOP ===== */
+function update(dt){const ph=S.ph,mv=GO.includes(ph);
+ if(mv){let ix=J.x+(K.KeyD||K.ArrowRight?1:0)-(K.KeyA||K.ArrowLeft?1:0),iy=J.y+(K.KeyS||K.ArrowDown?1:0)-(K.KeyW||K.ArrowUp?1:0);
+  if(K.KeyQ)S.yaw+=dt*1.8;if(K.KeyE)S.yaw-=dt*1.8;const l=Math.hypot(ix,iy);if(l>1){ix/=l;iy/=l}
+  const s=Math.sin(S.yaw),c=Math.cos(S.yaw);let wx=c*ix+s*iy,wz=-s*ix+c*iy,mvg=l>.05;if(mvg)D0=null;else if(D0){const dx=D0.x-H.x,dz=D0.z-H.z,d=Math.hypot(dx,dz);if(d<.4)D0=null;else{wx=dx/d;wz=dz/d;mvg=true}}
+  if(mvg){H.x+=wx*9*dt;H.z+=wz*9*dt;let d=Math.atan2(wx,wz)-hg.rotation.y;d=Math.atan2(Math.sin(d),Math.cos(d));hg.rotation.y+=d*Math.min(1,12*dt)}
+  collide(H);H.y=mvg?Math.abs(Math.sin(performance.now()/110))*.5:0}
+ else S.yaw+=dt*.4;
+ hg.position.set(H.x,H.y,H.z);if(crown)crown.rotation.z+=dt*3;crys.rotation.y+=dt;
+ cam.position.set(H.x+Math.sin(S.yaw)*10,H.y+7,H.z+Math.cos(S.yaw)*10);cam.lookAt(H.x,1.5,H.z);
+ const now=performance.now()/300;
+ tg.forEach(t=>{if(t.dy!==undefined){t.dy-=dt*1.6;t.g.scale.setScalar(Math.max(.01,t.dy));if(t.dy<=0)t.g.visible=false}
+  else if(!t.turret)t.g.position.y=Math.abs(Math.sin(now+t.g.position.x))*.3;
+  if(t.ring.visible)t.ring.scale.setScalar(1+Math.sin(now*2)*.12);if(t.bar)t.bar.lookAt(cam.position)});
+ if(ph==='ask'){S.tq-=dt;if(S.tq<=0){S.tq=0;wrongT()}}
+ if(ph==='pick'||ph==='go'){S.jt=Math.max(0,S.jt-dt);const n=Math.ceil(S.jt);
+  msg((ph==='pick'?'✅ Benar! Ketuk musuh yang mau diserang':'🎯 Gerakkan hero dekati target')+(n?` · ⏳${n}`:' · soal baru menunggu hero bergerak'));
+  if(ph==='go'){const dx=S.t.g.position.x-H.x,dz=S.t.g.position.z-H.z;if(Math.hypot(dx,dz)<(S.t.turret?6.5:5))atk()}}
+ else if(ph==='ask')msg('');
+ if(ph==='hit'){if(S.pr){const p=S.pr;p.a+=dt/.4;const a=Math.min(1,p.a),q=S.t.g.position;p.m.position.set(p.fx+(q.x-p.fx)*a,1.6+Math.sin(a*Math.PI),p.fz+(q.z-p.fz)*a);
+  if(a>=1){sc.remove(p.m);S.pr=null;hit();S.nx=1.1}}else{S.nx-=dt;if(S.nx<=0){S.qi++;nextQ()}}}
+ $('hl').textContent='❤️ '+S.lives;$('hs2').textContent='⭐ '+S.score;$('hq').textContent=`Soal ${Math.min(S.qi+1,20)}/20 ${TH[S.th].e}`;$('ht').textContent=ph==='ask'?`⏱ ${Math.ceil(S.tq)}`:'⏱ –'}
+let last=0;function loop(t){requestAnimationFrame(loop);const dt=Math.min((t-last)/1000,.05);last=t;update(dt);ren.render(sc,cam)}
+function rs(){ren.setSize(innerWidth,innerHeight,false);cam.aspect=innerWidth/innerHeight;cam.fov=innerWidth<innerHeight?72:60;cam.updateProjectionMatrix()}
+addEventListener('resize',rs);
+
+/* ===== UI BERANDA ===== */
+function chips(id,items,key,on){const el=$(id);el.innerHTML='';items.forEach((x,i)=>{const b=document.createElement('button');b.className='ch'+(on(i)?' on':'');b.textContent=x;b.onclick=()=>{if(key==='lv'&&i>Prog.open(S.mode)){$('lk').textContent='🔒 Selesaikan tingkat sebelumnya dulu ya!';return}$('lk').textContent='';S[key]=key==='mode'?['mtk','en'][i]:i;if(key==='mode'&&S.lv>Prog.open(S.mode))S.lv=0;if(key==='hero')buildHero();drawChips()};el.appendChild(b)})}
+function drawChips(){chips('hh',Data.heroes.map(h=>h.n),'hero',i=>i===S.hero);chips('mm',['🔢 MTK','🔤 Inggris'],'mode',i=>['mtk','en'][i]===S.mode);chips('ll',Data.lv.map((l,i)=>(i>Prog.open(S.mode)?'🔒 ':'')+l.n),'lv',i=>i===S.lv)}
+function board(){const b=Store.get().slice(0,5);$('bd').innerHTML=b.length?b.map((r,i)=>`<div class="bd">${i+1}. <b>${r.h}</b> · ${r.m} ${r.l} · ⭐${r.s}<br><span class="mu">Finish: ${r.d}</span></div>`).join(''):'<div class="mu">Belum ada. Jadilah Hero Terbaik pertama!</div>'}
+$('mu').onclick=()=>{Mus.on=!Mus.on;$('mu').textContent=Mus.on?'🔊':'🔇';if(Mus.on&&GO.includes(S.ph))Mus.start();else Mus.stop()};$('go').onclick=()=>{beep(440,.08);startGame()};$('again').onclick=startGame;$('back').onclick=toHome;
+drawChips();buildHero();buildTargets();tg.forEach(t=>t.ring.visible=false);board();rs();requestAnimationFrame(loop);
+</script></body></html>
